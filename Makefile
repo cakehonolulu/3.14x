@@ -15,9 +15,13 @@ ifdef DEBUG
 CFLAGS += -g
 endif
 
+ifdef ASAN
+CFLAGS += -fsanitize=address
+endif
+
 all: clean $(BINARY)
 
-$(BINARY): 314x.c
+$(BINARY): 314x.c functions.c
 	@echo "🚧 Building..."
 	$(CC) $(CFLAGS) $^ -o $@
 
