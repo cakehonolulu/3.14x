@@ -18,6 +18,9 @@ typedef struct {
 	FILE *m_board_file;
 	unsigned char *m_board;
 
+	unsigned char **m_calculated_rows;
+	unsigned char **m_calculated_cols;
+
 } m_314x;
 
 #endif /* E14X_H */
