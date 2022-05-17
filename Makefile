@@ -12,6 +12,10 @@ CC = x86_64-w64-mingw32-gcc
 endif
 
 ifdef DEBUG
+CFLAGS += -DDEBUG
+endif
+
+ifdef SYMB
 CFLAGS += -g
 endif
 
@@ -21,7 +25,7 @@ endif
 
 all: clean $(BINARY)
 
-$(BINARY): 314x.c engine.c
+$(BINARY): 314x.c engine.c game.c
 	@echo "🚧 Building..."
 	$(CC) $(CFLAGS) $^ -o $@
 

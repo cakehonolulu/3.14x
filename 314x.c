@@ -1,4 +1,5 @@
 #include <engine.h>
+#include <game.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -21,7 +22,9 @@ int main(int argc, char **argv)
 			if (m_picross.m_cols != -1 && m_picross.m_rows != -1 && m_picross.m_cols != -1)
 			{
 				printf("Rows: %d, Columns: %d, Tries: %d\n", m_picross.m_rows, m_picross.m_cols, m_picross.m_atms);
-				m_engine_generate_board(&m_picross);
+				m_engine_load_board(&m_picross);
+
+				m_game_print_result(&m_picross);
 
 				m_engine_close(&m_picross);
 			}

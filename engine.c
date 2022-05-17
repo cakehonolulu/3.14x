@@ -12,9 +12,11 @@ m_314x m_engine_init(FILE *m_file)
 	char m_line[10];
 	char *m_splice;
 
+	m_picross.m_board_file = m_file;
+
 	fgets(m_line, 10, m_file);
 	
-	fclose(m_file);
+	rewind(m_file);
 
 	m_splice = strtok(m_line, " \n");
 
@@ -22,7 +24,7 @@ m_314x m_engine_init(FILE *m_file)
 	{
 		if (m_picross.m_rows == -1)
 		{
-			if (atoi(m_splice) < 10)
+			if (atoi(m_splice) < 16)
 			{
 				m_picross.m_rows = atoi(m_splice);
 			}
@@ -34,7 +36,7 @@ m_314x m_engine_init(FILE *m_file)
 		else
 		if (m_picross.m_cols == -1)
 		{
-			if (atoi(m_splice) < 10)
+			if (atoi(m_splice) < 16)
 			{
 				m_picross.m_cols = atoi(m_splice);
 			}
@@ -61,9 +63,10 @@ m_314x m_engine_init(FILE *m_file)
 	return m_picross;
 }
 
-char m_engine_generate_board(m_314x *m_game)
+char m_engine_load_board(m_314x *m_game)
 {
 	char m_result = 0;
+	int m_coord_val;
 
 	printf("Generating a %d by %d board...\n", m_game->m_rows, m_game->m_cols);
 
@@ -74,7 +77,30 @@ char m_engine_generate_board(m_314x *m_game)
 	if (m_game->m_board != NULL)
 	{
 		printf("Successfully initialized the board's memory\n");
-		
+
+		fscanf(m_game->m_board_file, "%*[^\n]");
+
+		for (int i = 0; i < m_game->m_rows; i++)
+		{
+	    	for (int j = 0; j < m_game->m_cols; j++)
+			{
+				fscanf(m_game->m_board_file, "%d", &m_coord_val);
+				m_game->m_board[i * m_game->m_cols + j] = m_coord_val;
+	    	}
+		}
+
+		fclose(m_game->m_board_file);
+
+#ifdef DEBUG
+		for (int i = 0; i < m_game->m_rows; i++)
+		{
+	    	for (int j = 0; j < m_game->m_cols; j++)
+			{
+				printf("%d", m_game->m_board[i * m_game->m_cols + j]);
+	    	}
+			printf("\n");
+		}
+#endif
 	}
 	else
 	{
