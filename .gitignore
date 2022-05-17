@@ -1,4 +1,4 @@
 314x
 *.exe
 *.o
-
+.vscode/
