@@ -21,7 +21,7 @@ endif
 
 all: clean $(BINARY)
 
-$(BINARY): 314x.c functions.c
+$(BINARY): 314x.c engine.c
 	@echo "🚧 Building..."
 	$(CC) $(CFLAGS) $^ -o $@
 

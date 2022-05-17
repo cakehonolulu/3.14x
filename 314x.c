@@ -1,4 +1,4 @@
-#include <functions.h>
+#include <engine.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,7 +16,24 @@ int main(int argc, char **argv)
 
 		if (m_game != NULL)
 		{
-			m_picross = m_init_engine(m_game);
+			m_picross = m_engine_init(m_game);
+
+			if (m_picross.m_cols != -1 && m_picross.m_rows != -1 && m_picross.m_cols != -1)
+			{
+				printf("Rows: %d, Columns: %d, Tries: %d\n", m_picross.m_rows, m_picross.m_cols, m_picross.m_atms);
+				m_engine_generate_board(&m_picross);
+
+				m_engine_close(&m_picross);
+			}
+			else
+			{
+				printf("There was an error parsing your file...\nExiting...\n");
+			}
+			// Mock-up
+			// m_print_game(m_picross);
+
+			// Mock-up
+			// m_start_game(m_picross);
 		}
 		else
 		{
