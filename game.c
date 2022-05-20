@@ -86,6 +86,46 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale)
 	}
 }
 
+char* m_game_calc_aux_string(char *m_string)
+{
+	char *m_return;
+
+	int m_num = 0;
+
+	bool m_prev = false;
+
+	printf("Processing: %s\n", m_string);
+
+	while (*m_string != '\0')
+	{
+		if (*m_string == '1')
+		{
+			m_num++;
+			m_prev = true;
+		}
+		else
+		{
+			m_prev = false;
+			
+			m_num = 0;
+		}
+		
+		if (m_prev)
+		{
+
+		}
+
+		// Increment the string pointer
+		*m_string++;
+	}
+
+	printf("Number of 1's: %d\n", m_num);
+
+	exit(1);
+
+	return m_return;
+}
+
 void m_game_calc_rows(m_314x *m_game)
 {
 	unsigned int m_current_row = 0;
@@ -94,9 +134,11 @@ void m_game_calc_rows(m_314x *m_game)
 	char *m_current_string, current_char[2];
 	current_char[1] = '\0';
 
+
+
 	m_game->m_calculated_rows = malloc(m_game->m_rows * sizeof(char*));
 
-	for (int i = 0; i < m_game->m_rows; i++)
+	for (int i = 1; i < m_game->m_rows; i++)
 	{
 		m_current_string = (char *) malloc(2);
 
@@ -114,6 +156,9 @@ void m_game_calc_rows(m_314x *m_game)
 		printf("Current string: %s\n", m_current_string);
 
 		// Now process the string :)
+
+		m_current_string = m_game_calc_aux_string(m_current_string);
+
 		//m_game->m_calculated_rows[m_current_row] = malloc(strlen(m_current_string) * sizeof(char));
 
 
