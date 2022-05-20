@@ -94,51 +94,67 @@ char* m_game_calc_aux_string(char *m_string)
 
 	bool m_prev = false;
 
-	printf("Processing: %s\n", m_string);
+	char current_char[2];
+	current_char[1] = '\0';
+	
+	m_return = (char *) malloc(2);
+
+	strcpy(m_return, "\0");
 
 	while (*m_string != '\0')
 	{
 		if (*m_string == '1')
 		{
 			m_num++;
+			current_char[0] = m_num + '0';
 			m_prev = true;
 		}
 		else
 		{
+			if (m_prev == true)
+			{
+				current_char[0] = m_num + '0';
+				strcat(m_return, current_char);
+				strcat(m_return, " ");
+				m_num = 0;
+			}
+
 			m_prev = false;
-			
-			m_num = 0;
 		}
 		
-		if (m_prev)
-		{
-
-		}
-
 		// Increment the string pointer
 		*m_string++;
 	}
 
-	printf("Number of 1's: %d\n", m_num);
+	if (m_num != 0)
+	{
+		strcat(m_return, current_char);
+	}
 
-	exit(1);
+	int length = strlen(m_return);
+
+	if (length == 0)
+	{
+		strcat(m_return, "0");
+	}
+
+	if (m_return[strlen(m_return) - 1] == ' ')
+	{
+		m_return[strlen(m_return) - 1] = '\0';
+	}
 
 	return m_return;
 }
 
 void m_game_calc_rows(m_314x *m_game)
 {
-	unsigned int m_current_row = 0;
-
-
 	char *m_current_string, current_char[2];
 	current_char[1] = '\0';
 
 
-
 	m_game->m_calculated_rows = malloc(m_game->m_rows * sizeof(char*));
 
-	for (int i = 1; i < m_game->m_rows; i++)
+	for (int i = 0; i < m_game->m_rows; i++)
 	{
 		m_current_string = (char *) malloc(2);
 
@@ -153,24 +169,57 @@ void m_game_calc_rows(m_314x *m_game)
 			strcat(m_current_string, current_char);
 		}
 
-		printf("Current string: %s\n", m_current_string);
-
 		// Now process the string :)
 
 		m_current_string = m_game_calc_aux_string(m_current_string);
 
-		//m_game->m_calculated_rows[m_current_row] = malloc(strlen(m_current_string) * sizeof(char));
+		m_game->m_calculated_rows[i] = malloc(strlen(m_current_string) * sizeof(char));
 
+		strcpy(m_game->m_calculated_rows[i], m_current_string);
+
+		printf("Calculated %d row: %s\n", i + 1, m_game->m_calculated_rows[i]);
 
 		free(m_current_string);
-
-		m_current_row++;
 	}
 
 }
 
 void m_game_calc_cols(m_314x *m_game)
 {
+	char *m_current_string, current_char[2];
+	current_char[1] = '\0';
+
+	m_game->m_calculated_cols = malloc(m_game->m_cols * sizeof(char*));
+
+	for (int i = 0; i < m_game->m_rows; i++)
+	{
+
+		m_current_string = (char *) malloc(2);
+
+		strcpy(m_current_string, "\0");
+
+
+		for (int j = 0; j < m_game->m_cols; j++)
+		{
+			current_char[0] = m_game->m_board[i + m_game->m_rows * j] + '0';
+
+			m_current_string = (char *) realloc(m_current_string, strlen(m_current_string) + 2);
+
+			strcat(m_current_string, current_char);
+		}
+
+		// Now process the string :)
+
+		m_current_string = m_game_calc_aux_string(m_current_string);
+
+		m_game->m_calculated_cols[i] = malloc(strlen(m_current_string) * sizeof(char));
+
+		strcpy(m_game->m_calculated_cols[i], m_current_string);
+
+		printf("Calculated %d col: %s\n", i + 1, m_game->m_calculated_cols[i]);
+
+		free(m_current_string);
+	}
 
 }
 
@@ -178,6 +227,9 @@ void m_game_calc(m_314x *m_game)
 {
 
 	m_game_calc_rows(m_game);
+
+	printf("\n\n");
+	
 	m_game_calc_cols(m_game);
 
 }

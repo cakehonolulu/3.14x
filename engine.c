@@ -65,7 +65,6 @@ m_314x m_engine_init(FILE *m_file)
 
 char m_engine_load_board(m_314x *m_game)
 {
-	char m_result = 0;
 	int m_coord_val;
 
 	printf("Generating a %d by %d board...\n", m_game->m_rows, m_game->m_cols);
