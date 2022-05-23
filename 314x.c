@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 				printf("Rows: %d, Columns: %d, Tries: %d\n", m_picross.m_rows, m_picross.m_cols, m_picross.m_atms);
 				m_engine_load_board(&m_picross);
 
-				m_game_print_result(&m_picross, true, true);
+				m_game_print_result(&m_picross, true, true, false);
 
 				m_game_calc(&m_picross);
 

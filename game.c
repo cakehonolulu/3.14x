@@ -1,9 +1,9 @@
 #include <game.h>
 #include <string.h>
 
-void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale)
+void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data)
 {
-	int i, j;
+	int i, j, m_max_len = 0;
 
 	if (!m_graphics && m_upscale)
 	{
@@ -13,13 +13,42 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale)
 	{
 		printf("Current game:\n\n");
 
-		printf("┌");
-		for (i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
-		printf("┐\n");
+		if (m_have_calc_data)
+		{
+			m_max_len = m_game_calc_max_hint_len(m_game);
+
+			printf("m_max_len: %d, m_cols: %d, no_sum: %d, calc: %d\n\n", m_max_len, m_game->m_cols, ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)), ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)));
+
+			printf("┌");
+			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+			printf("┐\n");
+		}
+		else
+		{
+			printf("┌");
+			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
+			printf("┐\n");
+		}
 
 		for (i = 0; i < m_game->m_rows; i++)
 		{
+			if (m_have_calc_data)
+			{
+				printf("│ %s ", m_game->m_calculated_rows[i]);
+
+				int x = strlen(m_game->m_calculated_rows[i]);
+
+				if (x < m_max_len)
+				{
+					for (x; x < m_max_len; x++)
+					{
+						printf(" ");
+					}
+				}
+			}
+			
 			printf("│ ");
+			
 			for (j = 0; j < m_game->m_cols; j++)
 			{
 				if (m_game->m_board[i * m_game->m_cols + j] == 1)
@@ -81,7 +110,14 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale)
 		}
 
 		printf("└");
-		for (i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
+		if (m_have_calc_data)
+		{
+			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+		}
+		else
+		{
+			for (i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
+		}
 		printf("┘\n");
 	}
 }
@@ -232,4 +268,25 @@ void m_game_calc(m_314x *m_game)
 	
 	m_game_calc_cols(m_game);
 
+	m_game_print_result(m_game, true, true, true);
+
+	m_game_print_result(m_game, true, false, true);
+
+	m_game_print_result(m_game, false, false, true);
+}
+
+unsigned char m_game_calc_max_hint_len(m_314x *m_game)
+{
+	unsigned char m_max_len = 0;
+	int i = 0;
+
+	for (i = 0; i < m_game->m_rows; i++)
+	{
+		if (strlen(m_game->m_calculated_rows[i]) > m_max_len)
+		{
+			m_max_len = strlen(m_game->m_calculated_rows[i]);
+		}
+	}
+
+	return m_max_len;
 }
