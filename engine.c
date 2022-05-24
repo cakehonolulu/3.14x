@@ -111,10 +111,32 @@ char m_engine_load_board(m_314x *m_game)
 
 void m_engine_close(m_314x *m_game)
 {
+	int i;
+
 	printf("Uninitializing the engine...\n");
 
 	if (m_game->m_board != NULL)
 	{
 		free(m_game->m_board);
+	}
+
+	for (i = 0; i < m_game->m_cols; i++)
+	{
+		free(m_game->m_calculated_cols[i]);
+	}
+
+	for (i = 0; i < m_game->m_rows; i++)
+	{
+		free(m_game->m_calculated_rows[i]);
+	}
+
+	if (m_game->m_calculated_cols != NULL)
+	{
+		free(m_game->m_calculated_cols);
+	}
+
+	if (m_game->m_calculated_rows != NULL)
+	{
+		free(m_game->m_calculated_rows);
 	}
 }
