@@ -122,12 +122,18 @@ void m_engine_close(m_314x *m_game)
 
 	for (i = 0; i < m_game->m_cols; i++)
 	{
-		free(m_game->m_calculated_cols[i]);
+		if (m_game->m_calculated_cols[i] != NULL)
+		{
+			free(m_game->m_calculated_cols[i]);
+		}
 	}
 
 	for (i = 0; i < m_game->m_rows; i++)
 	{
-		free(m_game->m_calculated_rows[i]);
+		if (m_game->m_calculated_rows[i] != NULL)
+		{
+			free(m_game->m_calculated_rows[i]);
+		}
 	}
 
 	if (m_game->m_calculated_cols != NULL)
