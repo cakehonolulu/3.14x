@@ -194,10 +194,8 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 	}
 }
 
-char* m_game_calc_aux_string(char *m_string)
+char *m_game_calc_aux_string(char *m_string, char *m_return)
 {
-	char *m_return;
-
 	int m_num = 0;
 
 	bool m_prev = false;
@@ -205,8 +203,6 @@ char* m_game_calc_aux_string(char *m_string)
 	char current_char[2];
 	current_char[1] = '\0';
 	
-	m_return = (char *) malloc(2);
-
 	strcpy(m_return, "\0");
 
 	while (*m_string != '\0')
@@ -223,6 +219,7 @@ char* m_game_calc_aux_string(char *m_string)
 			{
 				current_char[0] = m_num + '0';
 				strcat(m_return, current_char);
+				m_return = realloc(m_return, (strlen(m_return) + 3));
 				strcat(m_return, " ");
 				m_num = 0;
 			}
@@ -256,14 +253,14 @@ char* m_game_calc_aux_string(char *m_string)
 
 void m_game_calc_rows(m_314x *m_game)
 {
-	char *m_current_string, current_char[2];
+	char *m_current_string, *m_return, current_char[2];
 	current_char[1] = '\0';
-
 
 	m_game->m_calculated_rows = malloc(m_game->m_rows * sizeof(char*));
 
 	for (int i = 0; i < m_game->m_rows; i++)
 	{
+		m_return = (char *) malloc(2);
 		m_current_string = (char *) malloc(2);
 
 		strcpy(m_current_string, "\0");
@@ -272,24 +269,32 @@ void m_game_calc_rows(m_314x *m_game)
 		{
 			current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
 
-			m_current_string = (char *) realloc(m_current_string, strlen(m_current_string) + 2);
+			m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
 
 			strcat(m_current_string, current_char);
 		}
 
 		// Now process the string :)
-
-		m_current_string = m_game_calc_aux_string(m_current_string);
-
-		m_game->m_calculated_rows[i] = malloc(strlen(m_current_string) * sizeof(char));
-
-		strcpy(m_game->m_calculated_rows[i], m_current_string);
-
-		printf("Calculated %d row: %s\n", i + 1, m_game->m_calculated_rows[i]);
+#ifdef DEBUG
+		printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
+#endif
+		m_return = m_game_calc_aux_string(m_current_string, m_return);
 
 		free(m_current_string);
-	}
 
+#ifdef DEBUG
+		printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
+#endif
+		m_game->m_calculated_rows[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+
+		strcpy(m_game->m_calculated_rows[i], m_return);
+
+#ifdef DEBUG
+		printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+#endif
+
+		free(m_return);
+	}
 }
 
 void m_game_calc_cols(m_314x *m_game)
@@ -297,11 +302,13 @@ void m_game_calc_cols(m_314x *m_game)
 	char *m_current_string, current_char[2];
 	current_char[1] = '\0';
 
+	char *m_return;
+
 	m_game->m_calculated_cols = malloc(m_game->m_cols * sizeof(char*));
 
 	for (int i = 0; i < m_game->m_rows; i++)
 	{
-
+		m_return = (char *) malloc(2);
 		m_current_string = (char *) malloc(2);
 
 		strcpy(m_current_string, "\0");
@@ -317,23 +324,32 @@ void m_game_calc_cols(m_314x *m_game)
 		}
 
 		// Now process the string :)
-
-		m_current_string = m_game_calc_aux_string(m_current_string);
-
-		m_game->m_calculated_cols[i] = malloc(strlen(m_current_string) * sizeof(char));
-
-		strcpy(m_game->m_calculated_cols[i], m_current_string);
-
-		printf("Calculated %d col: %s\n", i + 1, m_game->m_calculated_cols[i]);
+#ifdef DEBUG
+		printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
+#endif
+		m_return = m_game_calc_aux_string(m_current_string, m_return);
 
 		free(m_current_string);
+
+#ifdef DEBUG
+		printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
+#endif
+
+		m_game->m_calculated_cols[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+
+		strcpy(m_game->m_calculated_cols[i], m_return);
+
+#ifdef DEBUG
+		printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+#endif
+
+		free(m_return);
 	}
 
 }
 
 void m_game_calc(m_314x *m_game)
 {
-
 	m_game_calc_rows(m_game);
 
 	printf("\n\n");
