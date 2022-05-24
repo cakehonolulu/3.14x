@@ -251,12 +251,32 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 	return m_return;
 }
 
-void m_game_calc_rows(m_314x *m_game)
+void m_game_calc_line(m_314x *m_game, m_data_type m_type)
 {
 	char *m_current_string, *m_return, current_char[2];
 	current_char[1] = '\0';
 
-	m_game->m_calculated_rows = malloc(m_game->m_rows * sizeof(char*));
+#ifdef DEBUG
+	if (m_type == rows)
+	{
+		printf("Rows: %d\n", m_game->m_rows);
+	}
+	else
+	if (m_type == columns)
+	{
+		printf("Cols: %d\n", m_game->m_cols);
+	}
+#endif
+
+	if (m_type == rows)
+	{
+		m_game->m_calculated_rows = malloc(m_game->m_rows * sizeof(char*));
+	}
+	else
+	if (m_type == columns)
+	{
+		m_game->m_calculated_cols = malloc(m_game->m_cols * sizeof(char*));
+	}
 
 	for (int i = 0; i < m_game->m_rows; i++)
 	{
@@ -267,7 +287,15 @@ void m_game_calc_rows(m_314x *m_game)
 
 		for (int j = 0; j < m_game->m_cols; j++)
 		{
-			current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+			if (m_type == rows)
+			{
+				current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+			}
+			else
+			if (m_type == columns)
+			{
+				current_char[0] = m_game->m_board[i + m_game->m_rows * j] + '0';
+			}
 
 			m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
 
@@ -285,82 +313,46 @@ void m_game_calc_rows(m_314x *m_game)
 #ifdef DEBUG
 		printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
 #endif
-		m_game->m_calculated_rows[i] = malloc((strlen(m_return) + 1) * sizeof(char));
 
-		strcpy(m_game->m_calculated_rows[i], m_return);
-
-#ifdef DEBUG
-		printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
-#endif
-
-		free(m_return);
-	}
-}
-
-void m_game_calc_cols(m_314x *m_game)
-{
-	char *m_current_string, current_char[2];
-	current_char[1] = '\0';
-
-	char *m_return;
-
-	m_game->m_calculated_cols = malloc(m_game->m_cols * sizeof(char*));
-
-	for (int i = 0; i < m_game->m_rows; i++)
-	{
-		m_return = (char *) malloc(2);
-		m_current_string = (char *) malloc(2);
-
-		strcpy(m_current_string, "\0");
-
-
-		for (int j = 0; j < m_game->m_cols; j++)
+		if (m_type == rows)
 		{
-			current_char[0] = m_game->m_board[i + m_game->m_rows * j] + '0';
-
-			m_current_string = (char *) realloc(m_current_string, strlen(m_current_string) + 2);
-
-			strcat(m_current_string, current_char);
+			m_game->m_calculated_rows[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+			strcpy(m_game->m_calculated_rows[i], m_return);
+		}
+		else
+		if (m_type == columns)
+		{
+			m_game->m_calculated_cols[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+			strcpy(m_game->m_calculated_cols[i], m_return);
 		}
 
-		// Now process the string :)
 #ifdef DEBUG
-		printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
-#endif
-		m_return = m_game_calc_aux_string(m_current_string, m_return);
-
-		free(m_current_string);
-
-#ifdef DEBUG
-		printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
-#endif
-
-		m_game->m_calculated_cols[i] = malloc((strlen(m_return) + 1) * sizeof(char));
-
-		strcpy(m_game->m_calculated_cols[i], m_return);
-
-#ifdef DEBUG
-		printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+		if (m_type == rows)
+		{
+			printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+		}
+		else
+		if (m_type == columns)
+		{
+			printf("Calculated %d col: %s\n\n\n", i + 1, m_game->m_calculated_cols[i]);
+		}
 #endif
 
 		free(m_return);
 	}
-
 }
 
 void m_game_calc(m_314x *m_game)
 {
-	m_game_calc_rows(m_game);
+	m_game_calc_line(m_game, rows);
 
-	printf("\n\n");
-	
-	m_game_calc_cols(m_game);
+	m_game_calc_line(m_game, columns);
 
-	m_game_print_result(m_game, true, true, true);
+	m_game_print_result(m_game, true, true, false);
 
-	m_game_print_result(m_game, true, false, true);
+	m_game_print_result(m_game, true, false, false);
 
-	m_game_print_result(m_game, false, false, true);
+	m_game_print_result(m_game, false, false, false);
 }
 
 unsigned char m_game_calc_max_hint_len(m_314x *m_game, m_data_type m_type)
