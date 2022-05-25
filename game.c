@@ -3,7 +3,7 @@
 
 void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data)
 {
-	unsigned long m_max_len = 0;
+	unsigned long m_max_len = 0, i, j, k;
 
 	if (!m_graphics && m_upscale)
 	{
@@ -18,29 +18,29 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			m_max_len = m_game_calc_max_hint_len(m_game, false);
 
 			printf("┌");
-			for (int i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
+			for (i = 0; i <= ((unsigned long) ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0))); i++) { printf("─"); }
 			printf("┐\n");
 
 			m_max_len = m_game_calc_max_hint_len(m_game, true);
 
 			//printf("Len: %d\n", m_max_len);
-			for (unsigned long p = 0; p < m_max_len ; p += 2)
+			for (j = 0; j < m_max_len; j += 2)
 			{
 				printf("│ ");
-				for (int x = 0; x < m_game->m_cols; x++)
+				for (k = 0; k < ((unsigned long) m_game->m_cols); k++)
 				{
 					//printf("String: %s; Size: %lu\n", m_game->m_calculated_cols[x], strlen(m_game->m_calculated_cols[x]));
 					//if (strlen(m_game->m_calculated_cols[x]) < m_max_len)
 					//{
-					if (isdigit(m_game->m_calculated_cols[x][p]))
+					if (isdigit(m_game->m_calculated_cols[k][j]))
 					{
 						if (m_graphics && !m_upscale)
 						{
-							printf("%c", m_game->m_calculated_cols[x][p]);
+							printf("%c", m_game->m_calculated_cols[k][j]);
 						}
 						else
 						{
-							printf("%c ", m_game->m_calculated_cols[x][p]);
+							printf("%c ", m_game->m_calculated_cols[k][j]);
 						}							
 					}
 					else
@@ -75,21 +75,21 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			m_max_len = m_game_calc_max_hint_len(m_game, false);
 
 			printf("┌");
-			for (unsigned long i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
 			printf("┐\n");
 		}
 		else
 		{
 			printf("┌");
-			for (int i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
+			for (i = 0; i <= ((unsigned long) ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0))); i++) { printf("─"); }
 			printf("┐\n");
 		}
 
-		for (int i = 0; i < m_game->m_rows; i++)
+		for (i = 0; i < ((unsigned long) m_game->m_rows); i++)
 		{	
 			printf("│ ");
 			
-			for (char j = 0; j < m_game->m_cols; j++)
+			for (j = 0; j < ((unsigned long) m_game->m_cols); j++)
 			{
 				if (m_game->m_board[i * m_game->m_cols + j] == 1)
 				{
@@ -153,7 +153,7 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 
 				if (strlen(m_game->m_calculated_rows[i]) < m_max_len)
 				{
-					for (unsigned long x = strlen(m_game->m_calculated_rows[i]); x < m_max_len; x++)
+					for (k = strlen(m_game->m_calculated_rows[i]); k < m_max_len; k++)
 					{
 						printf(" ");
 					}
@@ -170,11 +170,11 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 		printf("└");
 		if (m_have_calc_data)
 		{
-			for (unsigned long i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
 		}
 		else
 		{
-			for (int i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
+			for (i = 0; i <= ((unsigned long) (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
 		}
 		printf("┘\n");
 	}
@@ -243,6 +243,8 @@ unsigned m_game_calc_line(m_314x *m_game, bool m_rows)
 	
 	current_char[1] = '\0';
 
+	int i, j;
+
 #ifdef DEBUG
 	if (m_rows)
 	{
@@ -273,7 +275,7 @@ unsigned m_game_calc_line(m_314x *m_game, bool m_rows)
 
 	if ((m_rows ? m_game->m_calculated_rows : m_game->m_calculated_cols) != NULL)
 	{
-		for (int i = 0; i < (m_rows ? m_game->m_rows : m_game->m_cols); i++)
+		for (i = 0; i < (m_rows ? m_game->m_rows : m_game->m_cols); i++)
 		{
 			m_return = (char *) malloc(2);
 			m_current_string = (char *) malloc(2);
@@ -284,7 +286,7 @@ unsigned m_game_calc_line(m_314x *m_game, bool m_rows)
 				{
 					strcpy(m_current_string, "\0");
 
-					for (int j = 0; j < (m_rows ? m_game->m_cols : m_game->m_rows); j++)
+					for (j = 0; j < (m_rows ? m_game->m_cols : m_game->m_rows); j++)
 					{
 						if (m_rows)
 						{
