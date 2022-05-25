@@ -22,23 +22,25 @@ int main(int argc, char **argv)
 			if (m_picross.m_cols != -1 && m_picross.m_rows != -1 && m_picross.m_cols != -1)
 			{
 				printf("Rows: %d, Columns: %d, Tries: %d\n", m_picross.m_rows, m_picross.m_cols, m_picross.m_atms);
-				m_engine_load_board(&m_picross);
+				
+				if (m_engine_load_board(&m_picross) == 0)
+				{
+					if (m_game_calc(&m_picross) != 0)
+					{
+						printf("There was an error processing the game files...\nExiting...\n");
+					}
 
-				//m_game_print_result(&m_picross, true, true, false);
-
-				m_game_calc(&m_picross);
-
-				m_engine_close(&m_picross);
+					m_engine_close(&m_picross);
+				}
+				else
+				{
+					printf("There was an error processing the board...\nExiting...\n");
+				}
 			}
 			else
 			{
 				printf("There was an error parsing your file...\nExiting...\n");
 			}
-			// Mock-up
-			// m_print_game(m_picross);
-
-			// Mock-up
-			// m_start_game(m_picross);
 		}
 		else
 		{

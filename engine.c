@@ -63,9 +63,10 @@ m_314x m_engine_init(FILE *m_file)
 	return m_picross;
 }
 
-char m_engine_load_board(m_314x *m_game)
+unsigned char m_engine_load_board(m_314x *m_game)
 {
 	int m_coord_val;
+	unsigned char m_err = 0;
 
 	printf("Generating a %d by %d board...\n", m_game->m_rows, m_game->m_cols);
 
@@ -104,9 +105,10 @@ char m_engine_load_board(m_314x *m_game)
 	else
 	{
 		printf("Memory exhausted!\nCannot continue execution...\n");
+		m_err = 1;
 	}
 
-	return 0;
+	return m_err;
 }
 
 void m_engine_close(m_314x *m_game)
