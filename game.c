@@ -3,7 +3,7 @@
 
 void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data)
 {
-	int i, j, m_max_len = 0;
+	unsigned long m_max_len = 0;
 
 	if (!m_graphics && m_upscale)
 	{
@@ -17,32 +17,30 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 		{
 			m_max_len = m_game_calc_max_hint_len(m_game, rows);
 			
-			for (i = 0; i <= (m_max_len + 2); i++)
+			for (unsigned long i = 0; i <= (m_max_len + 2); i++)
 			{
 				printf(" ");
 			}
 
 			printf("┌");
-			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
+			for (int i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
 			printf("┐\n");
 						
-			for (i = 0; i <= (m_max_len + 2); i++)
+			for (unsigned long i = 0; i <= (m_max_len + 2); i++)
 			{
 				printf(" ");
 			}
 
 			printf("│ ");
 
-
 			m_max_len = m_game_calc_max_hint_len(m_game, columns);
 
-			i = 0;
 
 			if (m_max_len > 1)
 			{
 				for (int x = 0; x < m_game->m_cols; x++)
 				{
-					if (strlen(m_game->m_calculated_cols[x] < 2))
+					if (strlen(m_game->m_calculated_cols[x]) < 2)
 					{
 						
 					}
@@ -92,27 +90,25 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			//printf("m_max_len: %d, m_cols: %d, no_sum: %d, calc: %d\n\n", m_max_len, m_game->m_cols, ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)), ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)));
 
 			printf("┌");
-			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+			for (unsigned long i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
 			printf("┐\n");
 		}
 		else
 		{
 			printf("┌");
-			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
+			for (int i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
 			printf("┐\n");
 		}
 
-		for (i = 0; i < m_game->m_rows; i++)
+		for (int i = 0; i < m_game->m_rows; i++)
 		{
 			if (m_have_calc_data)
 			{
 				printf("│ %s ", m_game->m_calculated_rows[i]);
 
-				int x = strlen(m_game->m_calculated_rows[i]);
-
-				if (x < m_max_len)
+				if (strlen(m_game->m_calculated_rows[i]) < m_max_len)
 				{
-					for (x; x < m_max_len; x++)
+					for (unsigned long x = strlen(m_game->m_calculated_rows[i]); x < m_max_len; x++)
 					{
 						printf(" ");
 					}
@@ -121,7 +117,7 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			
 			printf("│ ");
 			
-			for (j = 0; j < m_game->m_cols; j++)
+			for (char j = 0; j < m_game->m_cols; j++)
 			{
 				if (m_game->m_board[i * m_game->m_cols + j] == 1)
 				{
@@ -184,11 +180,11 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 		printf("└");
 		if (m_have_calc_data)
 		{
-			for (i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
+			for (unsigned long i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0) + (m_max_len + 3)); i++) { printf("─"); }
 		}
 		else
 		{
-			for (i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
+			for (int i = 0; i <= (m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0); i++) { printf("─"); }
 		}
 		printf("┘\n");
 	}
@@ -205,9 +201,9 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 	
 	strcpy(m_return, "\0");
 
-	while (*m_string != '\0')
+	for (char m_char = *m_string; m_char != '\0'; m_char = *m_string++)
 	{
-		if (*m_string == '1')
+		if (m_char == '1')
 		{
 			m_num++;
 			current_char[0] = m_num + '0';
@@ -226,10 +222,8 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 
 			m_prev = false;
 		}
-		
-		// Increment the string pointer
-		*m_string++;
 	}
+
 
 	if (m_num != 0)
 	{
