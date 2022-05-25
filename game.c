@@ -204,9 +204,9 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 	
 	strcpy(m_return, "\0");
 
-	for (char m_char = *m_string; m_char != '\0'; m_char = *m_string++)
+	while (*m_string != '\0')
 	{
-		if (m_char == '1')
+		if (*m_string == '1')
 		{
 			m_num++;
 			current_char[0] = m_num + '0';
@@ -225,6 +225,8 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 
 			m_prev = false;
 		}
+		// Increment the string pointer
+		*m_string++;
 	}
 
 
