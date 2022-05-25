@@ -23,15 +23,11 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 
 			m_max_len = m_game_calc_max_hint_len(m_game, true);
 
-			//printf("Len: %d\n", m_max_len);
 			for (j = 0; j < m_max_len; j += 2)
 			{
 				printf("│ ");
 				for (k = 0; k < ((unsigned long) m_game->m_cols); k++)
 				{
-					//printf("String: %s; Size: %lu\n", m_game->m_calculated_cols[x], strlen(m_game->m_calculated_cols[x]));
-					//if (strlen(m_game->m_calculated_cols[x]) < m_max_len)
-					//{
 					if (isdigit(m_game->m_calculated_cols[k][j]))
 					{
 						if (m_graphics && !m_upscale)
@@ -221,9 +217,7 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 		strcat(m_return, current_char);
 	}
 
-	int length = strlen(m_return);
-
-	if (length == 0)
+	if (strlen(m_return) == 0)
 	{
 		strcat(m_return, "0");
 	}
