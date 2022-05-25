@@ -1,4 +1,5 @@
 #include <314x.h>
+#include <ctype.h>
 #include <stdbool.h>
 
 typedef enum {rows, columns} m_data_type;

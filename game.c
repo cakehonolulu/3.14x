@@ -11,87 +11,73 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 	}
 	else
 	{
-		printf("Current game:\n\n");
+		printf("Current game:\nGraph? %d; Upscale?  %d\n\n", m_graphics, m_upscale);
 
 		if (m_have_calc_data)
 		{
 			m_max_len = m_game_calc_max_hint_len(m_game, rows);
-			
-			for (unsigned long i = 0; i <= (m_max_len + 2); i++)
-			{
-				printf(" ");
-			}
 
 			printf("┌");
 			for (int i = 0; i <= ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0)); i++) { printf("─"); }
 			printf("┐\n");
-						
-			for (unsigned long i = 0; i <= (m_max_len + 2); i++)
-			{
-				printf(" ");
-			}
-
-			printf("│ ");
 
 			m_max_len = m_game_calc_max_hint_len(m_game, columns);
 
 
-			if (m_max_len > 1)
-			{
 				//printf("Len: %d\n", m_max_len);
-				for (int p = 0; p < (m_max_len - 1); p++)
+				for (unsigned long p = 0; p < m_max_len ; p += 2)
 				{
+					printf("│ ");
 					for (int x = 0; x < m_game->m_cols; x++)
 					{
 						
 						//printf("String: %s; Size: %lu\n", m_game->m_calculated_cols[x], strlen(m_game->m_calculated_cols[x]));
 						//if (strlen(m_game->m_calculated_cols[x]) < m_max_len)
 						//{
-						
-						printf("%c ", m_game->m_calculated_cols[x][p]);
-						//}
+						if (isdigit(m_game->m_calculated_cols[x][p]))
+						{
+							if (m_graphics && !m_upscale)
+							{
+								printf("%c", m_game->m_calculated_cols[x][p]);
+							}
+							else
+							{
+								printf("%c ", m_game->m_calculated_cols[x][p]);
+							}							
+						}
+						else
+						{
+							if (m_graphics == true && m_upscale == false)
+							{
+								printf(" ");
+							}
+							else
+							{
+								printf("  ");
+							}
+							
+						}
 
 					}
-
-					printf("\n| ");
-				}
-
-			}
-			else
-			{
-				for (int x = 0; x < m_game->m_cols; x++)
-				{
-					// Graphics no upscale
-					if (!m_upscale && m_graphics)
+					
+					if (m_graphics == true && m_upscale == false)
 					{
-						printf("%s", m_game->m_calculated_cols[x]);
+						printf(" │\n");
 					}
 					else
-					// Upscaled graphics
-					if (m_upscale && m_graphics)
+					if (m_graphics == true && m_upscale == true)
 					{
-						printf("%s ", m_game->m_calculated_cols[x]);
+						printf(" │\n");
 					}
 					else
-					// Text mode
+					if (m_graphics == false && m_upscale == false)
 					{
-						printf("%s ", m_game->m_calculated_cols[x]);
-					}			
+						printf("│\n");
+					}
+					
+				
+
 				}
-			}
-
-			if (!m_upscale && m_graphics)
-			{
-				printf(" ");
-			}
-			else
-			if (m_upscale && m_graphics)
-			{
-				printf(" ");
-			}
-
-			printf("│\n");
-
 
 			//printf("Max len: %d\n", m_max_len);
 			//exit(1);
@@ -112,20 +98,7 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 		}
 
 		for (int i = 0; i < m_game->m_rows; i++)
-		{
-			if (m_have_calc_data)
-			{
-				printf("│ %s ", m_game->m_calculated_rows[i]);
-
-				if (strlen(m_game->m_calculated_rows[i]) < m_max_len)
-				{
-					for (unsigned long x = strlen(m_game->m_calculated_rows[i]); x < m_max_len; x++)
-					{
-						printf(" ");
-					}
-				}
-			}
-			
+		{	
 			printf("│ ");
 			
 			for (char j = 0; j < m_game->m_cols; j++)
@@ -185,7 +158,26 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 				
 			}
 			if (m_graphics) printf(" ");
-			printf("│\n");
+			
+
+			if (m_have_calc_data)
+			{
+				printf("│ %s ", m_game->m_calculated_rows[i]);
+
+				if (strlen(m_game->m_calculated_rows[i]) < m_max_len)
+				{
+					for (unsigned long x = strlen(m_game->m_calculated_rows[i]); x < m_max_len; x++)
+					{
+						printf(" ");
+					}
+				}
+
+				printf("│\n");
+			}
+			else
+			{
+				printf("│\n");
+			}
 		}
 
 		printf("└");
