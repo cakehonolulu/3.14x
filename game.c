@@ -337,7 +337,7 @@ void m_game_calc_line(m_314x *m_game, m_data_type m_type)
 
 			for (int j = 0; j < m_game->m_rows; j++)
 			{
-				current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+				current_char[0] = m_game->m_board[i + m_game->m_cols * j] + '0';
 
 				m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
 
