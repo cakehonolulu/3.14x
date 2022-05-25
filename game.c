@@ -38,13 +38,24 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 
 			if (m_max_len > 1)
 			{
-				for (int x = 0; x < m_game->m_cols; x++)
+				//printf("Len: %d\n", m_max_len);
+				for (int p = 0; p < (m_max_len - 1); p++)
 				{
-					if (strlen(m_game->m_calculated_cols[x]) < 2)
+					for (int x = 0; x < m_game->m_cols; x++)
 					{
 						
+						//printf("String: %s; Size: %lu\n", m_game->m_calculated_cols[x], strlen(m_game->m_calculated_cols[x]));
+						//if (strlen(m_game->m_calculated_cols[x]) < m_max_len)
+						//{
+						
+						printf("%c ", m_game->m_calculated_cols[x][p]);
+						//}
+
 					}
+
+					printf("\n| ");
 				}
+
 			}
 			else
 			{
@@ -372,11 +383,11 @@ void m_game_calc(m_314x *m_game)
 
 	m_game_calc_line(m_game, columns);
 
-	m_game_print_result(m_game, true, true, false);
+	m_game_print_result(m_game, true, true, true);
 
-	m_game_print_result(m_game, true, false, false);
+	m_game_print_result(m_game, true, false, true);
 
-	m_game_print_result(m_game, false, false, false);
+	m_game_print_result(m_game, false, false, true);
 }
 
 unsigned char m_game_calc_max_hint_len(m_314x *m_game, m_data_type m_type)
