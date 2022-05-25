@@ -430,3 +430,22 @@ unsigned char m_game_calc_max_hint_len(m_314x *m_game, bool m_rows)
 
 	return m_max_len;
 }
+
+void m_game_loop(m_314x *m_game)
+{
+	char x, y;
+	bool m_ingame = true;
+
+	while (m_ingame)
+	{
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+		system("cls");
+#endif
+
+#if defined (__linux__) || defined(__unix__)
+		system("clear");
+#endif
+
+
+	}
+}

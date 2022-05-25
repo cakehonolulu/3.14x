@@ -25,7 +25,11 @@ int main(int argc, char **argv)
 				
 				if (m_engine_load_board(&m_picross) == 0)
 				{
-					if (m_game_calc(&m_picross) != 0)
+					if (m_game_calc(&m_picross) == 0)
+					{
+						m_game_loop(&m_picross);
+					}
+					else
 					{
 						printf("There was an error processing the game files...\nExiting...\n");
 					}

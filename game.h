@@ -9,3 +9,4 @@ void m_game_calc_rows(m_314x *m_game);
 void m_game_calc_cols(m_314x *m_game);
 unsigned char m_game_calc(m_314x *m_game);
 unsigned char m_game_calc_max_hint_len(m_314x *m_game, bool m_rows);
+void m_game_loop(m_314x *m_game);
