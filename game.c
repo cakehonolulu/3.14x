@@ -229,7 +229,6 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 		*m_string++;
 	}
 
-
 	if (m_num != 0)
 	{
 		strcat(m_return, current_char);
@@ -285,88 +284,146 @@ void m_game_calc_line(m_314x *m_game, m_data_type m_type)
 
 	if (m_type == rows)
 	{
-		for (int i = 0; i < m_game->m_rows; i++)
+		if (m_game->m_calculated_rows != NULL)
 		{
-			m_return = (char *) malloc(2);
-			m_current_string = (char *) malloc(2);
-
-			strcpy(m_current_string, "\0");
-
-			for (int j = 0; j < m_game->m_cols; j++)
+			for (int i = 0; i < m_game->m_rows; i++)
 			{
-				if (m_type == rows)
+				m_return = (char *) malloc(2);
+				m_current_string = (char *) malloc(2);
+
+				if (m_return != NULL)
 				{
-					current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+					if (m_current_string != NULL)
+					{
+						strcpy(m_current_string, "\0");
+
+						for (int j = 0; j < m_game->m_cols; j++)
+						{
+							if (m_type == rows)
+							{
+								current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+							}
+							else
+							if (m_type == columns)
+							{
+								current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+							}
+
+							m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
+
+							strcat(m_current_string, current_char);
+						}
+
+#ifdef DEBUG
+						printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
+#endif
+						m_return = m_game_calc_aux_string(m_current_string, m_return);
+
+						free(m_current_string);
+
+#ifdef DEBUG
+						printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
+#endif
+
+						m_game->m_calculated_rows[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+
+						if (m_game->m_calculated_rows[i] != NULL)
+						{
+							strcpy(m_game->m_calculated_rows[i], m_return);
+						}
+						else
+						{
+							printf("Couldn't allocate space for the calculated row!\nExiting...\n");
+						}
+
+#ifdef DEBUG
+						printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+#endif
+
+						free(m_return);
+					}
+					else
+					{
+						printf("Couldn't allocate space for the current string!\nExiting...\n");
+					}
 				}
 				else
-				if (m_type == columns)
 				{
-					current_char[0] = m_game->m_board[i * m_game->m_cols + j] + '0';
+					printf("Couldn't allocate space for the returned string!\nExiting...\n");
 				}
-
-				m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
-
-				strcat(m_current_string, current_char);
 			}
-
-#ifdef DEBUG
-			printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
-#endif
-			m_return = m_game_calc_aux_string(m_current_string, m_return);
-
-			free(m_current_string);
-
-#ifdef DEBUG
-			printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
-#endif
-
-			m_game->m_calculated_rows[i] = malloc((strlen(m_return) + 1) * sizeof(char));
-			strcpy(m_game->m_calculated_rows[i], m_return);
-
-#ifdef DEBUG
-			printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
-#endif
-
-			free(m_return);
+		}
+		else
+		{
+			printf("Couldn't allocate the row pointer array!\nExiting...\n");
 		}
 	}
 	else
 	if (m_type == columns)
 	{
-		for (int i = 0; i < m_game->m_cols; i++)
+		if (m_game->m_calculated_cols != NULL)
 		{
-			m_return = (char *) malloc(2);
-			m_current_string = (char *) malloc(2);
-
-			strcpy(m_current_string, "\0");
-
-			for (int j = 0; j < m_game->m_rows; j++)
+			for (int i = 0; i < m_game->m_cols; i++)
 			{
-				current_char[0] = m_game->m_board[i + m_game->m_cols * j] + '0';
+				m_return = (char *) malloc(2);
+				m_current_string = (char *) malloc(2);
 
-				m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
+				if (m_return != NULL)
+				{
+					if (m_current_string != NULL)
+					{
+						strcpy(m_current_string, "\0");
 
-				strcat(m_current_string, current_char);
+						for (int j = 0; j < m_game->m_rows; j++)
+						{
+							current_char[0] = m_game->m_board[i + m_game->m_cols * j] + '0';
+
+							m_current_string = (char *) realloc(m_current_string, (strlen(m_current_string) + 2));
+
+							strcat(m_current_string, current_char);
+						}
+
+#ifdef DEBUG
+						printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
+#endif
+						m_return = m_game_calc_aux_string(m_current_string, m_return);
+
+						free(m_current_string);
+
+#ifdef DEBUG
+						printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
+#endif
+
+						m_game->m_calculated_cols[i] = malloc((strlen(m_return) + 1) * sizeof(char));
+
+						if (m_game->m_calculated_cols[i] != NULL)
+						{
+							strcpy(m_game->m_calculated_cols[i], m_return);
+						}
+						else
+						{
+							printf("Couldn't allocate space for the calculated column!\nExiting...\n");
+						}
+
+#ifdef DEBUG
+						printf("Calculated %d col: %s\n\n\n", i + 1, m_game->m_calculated_cols[i]);
+#endif
+						free(m_return);
+					}
+					else
+					{
+						printf("Couldn't allocate space for the current string!\nExiting...\n");
+					}
+				}
+				else
+				{
+					printf("Couldn't allocate space for the returned string!\nExiting...\n");
+				}
 			}
-
-#ifdef DEBUG
-			printf("Current string: %s, Length: %lu\n", m_current_string, strlen(m_current_string));
-#endif
-			m_return = m_game_calc_aux_string(m_current_string, m_return);
-
-			free(m_current_string);
-
-#ifdef DEBUG
-			printf("Modified string: %s, Length: %lu\n", m_return, strlen(m_return));
-#endif
-
-			m_game->m_calculated_cols[i] = malloc((strlen(m_return) + 1) * sizeof(char));
-			strcpy(m_game->m_calculated_cols[i], m_return);
-
-#ifdef DEBUG
-			printf("Calculated %d col: %s\n\n\n", i + 1, m_game->m_calculated_cols[i]);
-#endif
-			free(m_return);
+		}
+		else
+		{
+			printf("Couldn't allocate the column pointer array!\nExiting...\n");
 		}
 	}
 }
