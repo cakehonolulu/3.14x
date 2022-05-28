@@ -11,6 +11,8 @@ int main(int argc, char **argv)
 
 	printf("3.14X - A C, Console, Picross Game\n");
 
+	unsigned char m_game_result = 0;
+
 	if (argc > 1)
 	{
 		m_game = fopen(argv[1], "r");
@@ -27,7 +29,26 @@ int main(int argc, char **argv)
 				{
 					if (m_game_calc(&m_picross) == 0)
 					{
-						m_game_loop(&m_picross);
+						m_game_result = m_game_loop(&m_picross);
+						if (m_game_result == 0)
+						{
+							printf("You won!\n");
+						}
+						else
+						if (m_game_result == 1)
+						{
+							printf("You lost... Better luck next time!\n");
+						}
+						else
+						if (m_game_result == 2)
+						{
+							printf("User asked to leave the game; leaving...\n");
+						}
+						else
+						if (m_game_result == 3)
+						{
+							printf("Program fault, exiting...\n");
+						}
 					}
 					else
 					{

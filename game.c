@@ -1,9 +1,17 @@
 #include <game.h>
 #include <string.h>
 
-void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data)
+void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data, bool m_hide_output)
 {
 	unsigned long m_max_len = 0, i, j, k;
+
+	if (m_hide_output)
+	{
+		if (m_game->m_blank_board == NULL)
+		{
+			
+		}
+	}
 
 	if (!m_graphics && m_upscale)
 	{
@@ -11,7 +19,9 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 	}
 	else
 	{
+#ifdef DEBUG
 		printf("Current game:\nGraph? %d; Upscale?  %d\n\n", m_graphics, m_upscale);
+#endif
 
 		if (m_have_calc_data)
 		{
@@ -21,36 +31,37 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			for (i = 0; i <= ((unsigned long) ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0))); i++) { printf("─"); }
 			printf("┐\n");
 
-			m_max_len = m_game_calc_max_hint_len(m_game, true);
 
-			for (j = 0; j < m_max_len; j += 2)
+			for (j = 0; j <= m_max_len; j += 2)
 			{
 				printf("│ ");
+
 				for (k = 0; k < ((unsigned long) m_game->m_cols); k++)
 				{
-					if (isdigit(m_game->m_calculated_cols[k][j]))
-					{
-						if (m_graphics && !m_upscale)
+						if (isdigit(m_game->m_calculated_cols[k][j]))
 						{
-							printf("%c", m_game->m_calculated_cols[k][j]);
+							if (m_graphics && !m_upscale)
+							{
+								printf("%c", m_game->m_calculated_cols[k][j]);
+							}
+							else
+							{
+								printf("%c ", m_game->m_calculated_cols[k][j]);
+							}							
 						}
 						else
 						{
-							printf("%c ", m_game->m_calculated_cols[k][j]);
-						}							
-					}
-					else
-					{
-						if (m_graphics == true && m_upscale == false)
-						{
-							printf(" ");
-						}
-						else
-						{
-							printf("  ");
+							if (m_graphics == true && m_upscale == false)
+							{
+								printf(" ");
+							}
+							else
+							{
+								printf("  ");
+							}
 						}
 					}
-				}
+
 				
 				if (m_graphics == true && m_upscale == false)
 				{
@@ -351,12 +362,12 @@ unsigned m_game_calc_line(m_314x *m_game, bool m_rows)
 #ifdef DEBUG
 						if (m_rows)
 						{
-							printf("Calculated %d row: %s\n\n\n", i + 1, m_game->m_calculated_rows[i]);
+							printf("Calculated %d row: %s, length: %lu\n\n\n", i + 1, m_game->m_calculated_rows[i], strlen(m_game->m_calculated_rows[i]));
 						}
 						else
 						if (!m_rows)
 						{
-							printf("Calculated %d col: %s\n\n\n", i + 1, m_game->m_calculated_cols[i]);
+							printf("Calculated %d col: %s, length: %lu\n\n\n", i + 1, m_game->m_calculated_cols[i], strlen(m_game->m_calculated_cols[i]));
 						}
 #endif
 
@@ -407,9 +418,9 @@ unsigned char m_game_calc(m_314x *m_game)
 	}	
 
 #ifdef DEBUG
-	m_game_print_result(m_game, true, true, true);
-	m_game_print_result(m_game, true, false, true);
-	m_game_print_result(m_game, false, false, true);
+	m_game_print_result(m_game, true, true, true, false);
+	m_game_print_result(m_game, true, false, true, false);
+	m_game_print_result(m_game, false, false, true, false);
 #endif
 
 	return m_err;
@@ -420,24 +431,101 @@ unsigned char m_game_calc_max_hint_len(m_314x *m_game, bool m_rows)
 	unsigned char m_max_len = 0;
 	int i;
 
-	for (i = 0; i < (m_rows ? m_game->m_rows : m_game->m_cols); i++)
+	if (m_rows)
+	{
+		for (i = 0; i < m_game->m_rows; i++)
+		{
+			if (strlen(m_game->m_calculated_rows[i]) > m_max_len)
+			{
+				m_max_len = strlen(m_game->m_calculated_rows[i]);
+			}
+		}
+	}
+	else
+	if (!m_rows)
+	{
+		for (i = 0; i < m_game->m_cols; i++)
+		{
+			if (strlen(m_game->m_calculated_cols[i]) > m_max_len)
+			{
+				m_max_len = strlen(m_game->m_calculated_cols[i]);
+			}
+		}
+	}
+	/*for (i = 0; i < (m_rows ? m_game->m_rows : m_game->m_cols); i++)
 	{
 		if (strlen((m_rows ? m_game->m_calculated_rows[i] : m_game->m_calculated_cols[i])) > m_max_len)
 		{
 			m_max_len = strlen((m_rows ? m_game->m_calculated_rows[i] : m_game->m_calculated_cols[i]));
 		}
-	}
+	}*/
 
 	return m_max_len;
 }
 
-void m_game_loop(m_314x *m_game)
+unsigned char m_game_loop(m_314x *m_game)
 {
-	char x, y;
-	bool m_ingame = true;
+	bool m_ingame = true, m_inmenu = true;
+	unsigned int m_game_menu_selection = 0;
+	char m_return = -1;
 
-	while (m_ingame)
+	m_game->m_blank_board = (unsigned char *) malloc( (sizeof(unsigned char) * (m_game->m_rows * m_game->m_cols)) );
+
+	if (m_game->m_blank_board != NULL)
 	{
+		while (m_ingame && m_return == -1)
+		{
+			m_game_clear_screen();
+
+			m_game_print_result(m_game, false, false, true, false);
+
+			while (m_inmenu && m_return == -1)
+			{
+				printf("\nInput your desired option (5, for help): ");
+
+				m_game_menu_selection = m_game_sanitized_input(false, false);
+
+				switch (m_game_menu_selection)
+				{
+					case 0: break;
+					case 1: break;
+					case 2: break;
+					case 3:
+						m_game_print_result(m_game, false, false, true, false);
+						break;
+
+					case 4:
+						m_return = 2;
+						break;
+
+					case 5:
+						printf("\nOptions list:\n");
+						printf("[0] Update a position in the table using (x,y) point coordinates\n");
+						printf("[1] View remaining tries\n");
+						printf("[2] Validate the board\n");
+						printf("[3] Print the current game\n");
+						printf("[4] Exit the game\n");
+						printf("[5] View this submenu\n");
+						break;
+					
+					default:
+						break;
+				}
+			}
+
+		}
+	}
+	else
+	{
+		printf("Couldn't allocate the game's blank board, exiting...\n");
+		m_return = 3;
+	}
+
+	return m_return;
+}
+
+void m_game_clear_screen(void)
+{
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 		system("cls");
 #endif
@@ -445,7 +533,54 @@ void m_game_loop(m_314x *m_game)
 #if defined (__linux__) || defined(__unix__)
 		system("clear");
 #endif
+}
 
+void m_game_coordinate_selection(void)
+{
+	unsigned int x, y;
+	
+	printf("\nWhich coordinate you want to manipulate?\n");
 
+	printf("X: ");
+
+	x = m_game_sanitized_input(true, true);
+
+	printf("Y: ");
+
+	y = m_game_sanitized_input(true, false);
+}
+
+unsigned int m_game_sanitized_input(bool m_coord, bool m_x)
+{
+	unsigned int m_number = 0, m_return = 0;
+	bool m_run = true;
+	char m_buffer[10];
+
+	while (m_run)
+	{
+		if (fgets(m_buffer, sizeof(m_buffer), stdin) != NULL)
+		{
+			if (sscanf(m_buffer, "%d", &m_number) == 1)
+			{
+				m_return = m_number;
+				m_run = false;
+			}
+			else
+			{
+				printf("Verify your input, only numbers are allowed.\n");
+				
+				if (m_x && m_coord)
+				{
+					printf("X: ");
+				}
+				else
+				if (!m_x && m_coord)
+				{
+					printf("Y: ");
+				}
+			}
+		}
 	}
+
+	return m_return;
 }

@@ -17,6 +17,7 @@ typedef struct {
 	// Mock-up
 	FILE *m_board_file;
 	unsigned char *m_board;
+	unsigned char *m_blank_board;
 
 	char **m_calculated_rows;
 	char **m_calculated_cols;

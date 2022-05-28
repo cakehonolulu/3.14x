@@ -7,6 +7,7 @@ m_314x m_engine_init(FILE *m_file)
 	m_picross.m_rows = -1;
 	m_picross.m_cols = -1;
 	m_picross.m_atms = -1;
+	m_picross.m_blank_board = NULL;
 
 	// Buffer has to account for newlines and null-byte ending string
 	char m_line[10];
@@ -120,6 +121,11 @@ void m_engine_close(m_314x *m_game)
 	if (m_game->m_board != NULL)
 	{
 		free(m_game->m_board);
+	}
+
+	if (m_game->m_blank_board != NULL)
+	{
+		free(m_game->m_blank_board);
 	}
 
 	for (i = 0; i < m_game->m_cols; i++)
