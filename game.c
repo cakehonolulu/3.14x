@@ -31,37 +31,51 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			for (i = 0; i <= ((unsigned long) ((m_game->m_cols) * (m_upscale ? 2 : 1) * (m_graphics ? 1 : 2) + (m_graphics ? 1 : 0))); i++) { printf("─"); }
 			printf("┐\n");
 
-
 			for (j = 0; j <= m_max_len; j += 2)
 			{
 				printf("│ ");
 
 				for (k = 0; k < ((unsigned long) m_game->m_cols); k++)
 				{
-						if (isdigit(m_game->m_calculated_cols[k][j]))
+					// Prevent heap-buffer-overflows
+					if (strlen(m_game->m_calculated_cols[k]) >= j)
+					{
+						if (isdigit(m_game->m_calculated_cols[k][j]) != 0)
 						{
-							if (m_graphics && !m_upscale)
-							{
-								printf("%c", m_game->m_calculated_cols[k][j]);
-							}
-							else
+							if (m_graphics == false && m_upscale == false)
 							{
 								printf("%c ", m_game->m_calculated_cols[k][j]);
-							}							
-						}
-						else
-						{
-							if (m_graphics == true && m_upscale == false)
-							{
-								printf(" ");
 							}
 							else
+							if (m_graphics == true && m_upscale == false)
 							{
-								printf("  ");
+								printf("%c ", m_game->m_calculated_cols[k][j]);
+							}
+							else
+							if (m_graphics == true && m_upscale == true)
+							{
+								printf("%c  ", m_game->m_calculated_cols[k][j]);
 							}
 						}
 					}
-
+					else
+					{
+						if (m_graphics == false && m_upscale == false)
+						{
+							printf("  ");
+						}
+						else
+						if (m_graphics == true && m_upscale == false)
+						{
+							printf("  ");
+						}
+						else
+						if (m_graphics == true && m_upscale == true)
+						{
+							printf("   ");
+						}
+					}
+				}
 				
 				if (m_graphics == true && m_upscale == false)
 				{
