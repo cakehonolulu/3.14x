@@ -5,14 +5,6 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 {
 	unsigned long m_max_len = 0, i, j, k;
 
-	if (m_hide_output)
-	{
-		if (m_game->m_blank_board == NULL)
-		{
-			
-		}
-	}
-
 	if (!m_graphics && m_upscale)
 	{
 		printf("Can't upscale text-only board!\n");
@@ -112,7 +104,7 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 			
 			for (j = 0; j < ((unsigned long) m_game->m_cols); j++)
 			{
-				if (m_game->m_board[i * m_game->m_cols + j] == 1)
+				if ((m_hide_output ? m_game->m_blank_board[i * m_game->m_cols + j] : m_game->m_board[i * m_game->m_cols + j] ) == 1)
 				{
 					if (m_graphics)
 					{
@@ -483,7 +475,7 @@ unsigned char m_game_loop(m_314x *m_game)
 	unsigned int m_game_menu_selection = 0;
 	char m_return = -1;
 
-	m_game->m_blank_board = (unsigned char *) malloc( (sizeof(unsigned char) * (m_game->m_rows * m_game->m_cols)) );
+	m_game->m_blank_board = (unsigned char *) calloc((m_game->m_rows * m_game->m_cols), (sizeof(unsigned char)));
 
 	if (m_game->m_blank_board != NULL)
 	{
@@ -491,7 +483,7 @@ unsigned char m_game_loop(m_314x *m_game)
 		{
 			m_game_clear_screen();
 
-			m_game_print_result(m_game, false, false, true, false);
+			m_game_print_result(m_game, false, false, true, true);
 
 			while (m_inmenu && m_return == -1)
 			{
@@ -505,7 +497,7 @@ unsigned char m_game_loop(m_314x *m_game)
 					case 1: break;
 					case 2: break;
 					case 3:
-						m_game_print_result(m_game, false, false, true, false);
+						m_game_print_result(m_game, false, false, true, true);
 						break;
 
 					case 4:
