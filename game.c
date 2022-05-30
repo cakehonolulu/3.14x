@@ -487,31 +487,66 @@ unsigned char m_game_loop(m_314x *m_game)
 
 			while (m_inmenu && m_return == -1)
 			{
-				printf("\nInput your desired option (5, for help): ");
+				printf("\nInput your desired option (6, for help): ");
 
-				m_game_menu_selection = m_game_sanitized_input(false, false);
+				m_game_menu_selection = m_game_sanitized_input(m_game, false, false, false, false, 0, 0);
 
 				switch (m_game_menu_selection)
 				{
-					case 0: break;
-					case 1: break;
-					case 2: break;
+					case 0:
+						m_game_update_coords(m_game);
+						m_game_clear_screen();
+						m_game_print_result(m_game, false, false, true, true);
+						break;
+
+					case 1:
+						printf("Remaining tries: %d\n", m_game->m_atms);
+						break;
+					
+					case 2:
+						if (m_game_validate(m_game) != true)
+						{
+							if (m_game->m_atms == 1)
+							{
+								printf("Failed attempt!\n");
+								m_game->m_atms--;
+								m_return = 1;
+							}
+							else
+							{
+								printf("Failed attempt!\n");
+								m_game->m_atms--;
+							}
+						}
+						else
+						if (m_game_validate(m_game) == true)
+						{
+							m_return = 0;
+						}
+						break;
+
 					case 3:
 						m_game_print_result(m_game, false, false, true, true);
 						break;
 
 					case 4:
-						m_return = 2;
+						m_game_clear_screen();
+						m_game_print_result(m_game, false, false, true, true);
 						break;
 
 					case 5:
+						m_return = 2;
+						break;
+
+					case 6:
 						printf("\nOptions list:\n");
 						printf("[0] Update a position in the table using (x,y) point coordinates\n");
 						printf("[1] View remaining tries\n");
 						printf("[2] Validate the board\n");
 						printf("[3] Print the current game\n");
-						printf("[4] Exit the game\n");
-						printf("[5] View this submenu\n");
+						printf("[4] Clear the screen\n");
+						printf("[5] Exit the game\n");
+						printf("[6] View this submenu\n");
 						break;
 					
 					default:
@@ -541,24 +576,34 @@ void m_game_clear_screen(void)
 #endif
 }
 
-void m_game_coordinate_selection(void)
+void m_game_update_coords(m_314x *m_game)
 {
-	unsigned int x, y;
+	int x, y, val;
 	
 	printf("\nWhich coordinate you want to manipulate?\n");
 
 	printf("X: ");
 
-	x = m_game_sanitized_input(true, true);
+	do {
+		x = m_game_sanitized_input(m_game, true, true, true, false, 0, 0);
+	} while (x < 0 || x > m_game->m_cols);
 
 	printf("Y: ");
 
-	y = m_game_sanitized_input(true, false);
+	do {
+		y = m_game_sanitized_input(m_game, true, false, true, false, 0, 0);
+	} while (y < 0 || y > m_game->m_rows);
+
+	printf("(%d, %d): ", x, y);
+
+	val = m_game_sanitized_input(m_game, false, false, false, true, x, y);
+
+	m_game->m_blank_board[x + m_game->m_cols * y] = val;
 }
 
-unsigned int m_game_sanitized_input(bool m_coord, bool m_x)
+unsigned int m_game_sanitized_input(m_314x *m_game, bool m_coord, bool m_x, bool m_check, bool m_val, int x, int y)
 {
-	unsigned int m_number = 0, m_return = 0;
+	int m_number = 0, m_return = 0;
 	bool m_run = true;
 	char m_buffer[10];
 
@@ -568,12 +613,39 @@ unsigned int m_game_sanitized_input(bool m_coord, bool m_x)
 		{
 			if (sscanf(m_buffer, "%d", &m_number) == 1)
 			{
-				m_return = m_number;
-				m_run = false;
+				if (m_val)
+				{
+					if (m_number == 1)
+					{
+						m_return = m_number;
+						m_run = false;
+					}
+					else
+					if (m_number == 0)
+					{
+						m_return = m_number;
+						m_run = false;
+					}
+					else
+					{
+						printf("Value must be either 0 or 1\n");
+						printf("(%d, %d): ", x, y);
+					}
+				}
+				else
+				{
+					m_return = m_number;
+					m_run = false;
+				}
 			}
 			else
 			{
 				printf("Verify your input, only numbers are allowed.\n");
+
+				if (!m_check)
+				{
+					printf("Input your desired option (5, for help): ");
+				}
 				
 				if (m_x && m_coord)
 				{
@@ -585,8 +657,55 @@ unsigned int m_game_sanitized_input(bool m_coord, bool m_x)
 					printf("Y: ");
 				}
 			}
+
+			if (m_x && m_check)
+			{
+				if (m_number > m_game->m_cols)
+				{
+					printf("X coordinate can't be higher than max game columns!\nX: ");
+				}
+				else
+				if (m_number < 0)
+				{
+					printf("X coordinates must be positive!\nX: ");
+				}
+			}
+			else
+			if (!m_x && m_check)
+			{
+				if (m_number > m_game->m_rows)
+				{
+					printf("Y coordinate can't be higher than max game columns!\nY: ");
+				}
+				else
+				if (m_number < 0)
+				{
+					printf("Y coordinates must be positive!\nY: ");
+				}
+			}
 		}
 	}
 
 	return m_return;
+}
+
+bool m_game_validate(m_314x *m_game)
+{
+	int i = 0;
+	bool m_check = true;
+
+	if (m_game->m_blank_board[0] == m_game->m_board[0])
+	{
+		while (i < (m_game->m_rows * m_game->m_cols))
+		{
+			if (m_game->m_blank_board[i] != m_game->m_board[i])
+			{
+				m_check = false;
+			}
+
+			i++;
+		}
+    }
+
+	return m_check;
 }
