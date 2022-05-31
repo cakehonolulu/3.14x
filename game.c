@@ -195,7 +195,7 @@ void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m
 
 char *m_game_calc_aux_string(char *m_string, char *m_return)
 {
-	int m_num = 0;
+	int m_num = 0, i, m_str_len;
 
 	bool m_prev = false;
 
@@ -204,9 +204,11 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 	
 	strcpy(m_return, "\0");
 
-	while (*m_string != '\0')
+	m_str_len = strlen(m_string);
+
+	for (i = 0; i < m_str_len; i++)
 	{
-		if (*m_string == '1')
+		if (m_string[i] == '1')
 		{
 			m_num++;
 			current_char[0] = m_num + '0';
@@ -225,8 +227,6 @@ char *m_game_calc_aux_string(char *m_string, char *m_return)
 
 			m_prev = false;
 		}
-		// Increment the string pointer
-		*m_string++;
 	}
 
 	if (m_num != 0)
