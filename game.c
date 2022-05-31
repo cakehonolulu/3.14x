@@ -694,18 +694,15 @@ bool m_game_validate(m_314x *m_game)
 	int i = 0;
 	bool m_check = true;
 
-	if (m_game->m_blank_board[0] == m_game->m_board[0])
+	while (i < (m_game->m_rows * m_game->m_cols))
 	{
-		while (i < (m_game->m_rows * m_game->m_cols))
+		if (m_game->m_blank_board[i] != m_game->m_board[i])
 		{
-			if (m_game->m_blank_board[i] != m_game->m_board[i])
-			{
-				m_check = false;
-			}
-
-			i++;
+			m_check = false;
 		}
-    }
+
+		i++;
+	}
 
 	return m_check;
 }
