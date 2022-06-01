@@ -9,6 +9,7 @@ BINARY := 314x
 
 ifdef WIN
 CC = x86_64-w64-mingw32-gcc
+BINARY := 314.exe
 endif
 
 ifdef C23
