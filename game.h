@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
+/* Function definitions */
 void m_game_print_result(m_314x *m_game, bool m_graphics, bool m_upscale, bool m_have_calc_data, bool m_hide_output);
 void m_game_calc_rows(m_314x *m_game);
 void m_game_calc_cols(m_314x *m_game);

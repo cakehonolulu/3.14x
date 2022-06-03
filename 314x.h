@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/* Struct Definitions */
 typedef struct {
 	// Game's Rows
 	char m_rows;
@@ -14,11 +15,14 @@ typedef struct {
 	// Attempts
 	char m_atms;
 
-	// Mock-up
+	// File descriptor
 	FILE *m_board_file;
+
+	// Game matrices
 	unsigned char *m_board;
 	unsigned char *m_blank_board;
 
+	// Auxiliary strings for row/col string hints
 	char **m_calculated_rows;
 	char **m_calculated_cols;
 
